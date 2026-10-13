@@ -4,13 +4,15 @@ import Themes
 import Models
 
 let arguments = CommandLine.arguments
+let settings = Settings(defaults: .standard)
+let themes: [ProgressTheme] = [AquaTheme(), NativeTheme(), AsciiTheme(slots: settings.slots)]
 
 if let i = arguments.firstIndex(of: "--print") {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy-MM-dd"
     let dates = arguments.dropFirst(i + 1).compactMap(formatter.date(from:))
     for date in dates.isEmpty ? [Date()] : dates {
-        print(AsciiTheme.render(MonthProgress(date), slots: Settings.slots))
+        print(AsciiTheme.render(MonthProgress(date), slots: settings.slots))
     }
     exit(0)
 }
@@ -21,7 +23,7 @@ if let i = arguments.firstIndex(of: "--iconset"), i + 1 < arguments.count {
 }
 
 let app = NSApplication.shared
-let controller = StatusController()
+let controller = StatusController(themes: themes, settings: settings, statusBar: .system)
 app.delegate = controller
 app.setActivationPolicy(.accessory)
 app.run()

@@ -19,13 +19,13 @@ Sources/
   Models/             domain models, no dependencies: MonthProgress (day/days/fraction)
   Api/                ports on Models: the ProgressTheme interface, shared status-item helpers
   Themes/             adapters on Api: AquaTheme, NativeTheme, AsciiTheme
-  MonthProgressBar/   the app and composition root: main, StatusController, ThemeRegistry, IconRenderer
+  MonthProgressBar/   the app: main.swift is the composition root; StatusController, Settings, IconRenderer
 Tests/MonthProgressTests/
 Resources/            Info.plist, sandbox entitlements, AppIcon.icns
 script-*-mac.sh
 ```
 
-A new theme is a type in `Themes/` conforming to `ProgressTheme`, added to `ThemeRegistry.all`.
+A new theme is a type in `Themes/` conforming to `ProgressTheme`, added to the `themes` list in `main.swift`.
 
 ## Build, test, install (macOS 13+, Xcode or its command line tools)
 

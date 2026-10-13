@@ -4,31 +4,26 @@ import Themes
 import ServiceManagement
 import Models
 
-enum ThemeRegistry {
-    static let all: [ProgressTheme] = [AquaTheme(), NativeTheme(), AsciiTheme(slots: Settings.slots)]
-
-    static func named(_ id: String?) -> ProgressTheme {
-        all.first { $0.id == id } ?? all[0]
-    }
-}
-
-enum Settings {
-    static var slots: Int { max(3, UserDefaults.standard.integer(forKey: "slots").nonZero ?? 10) }
-
-    static var theme: ProgressTheme {
-        get { ThemeRegistry.named(UserDefaults.standard.string(forKey: "theme")) }
-        set { UserDefaults.standard.set(newValue.id, forKey: "theme") }
-    }
-}
-
 // Left click: month details. Right click (or control-click): pick a theme.
 final class StatusController: NSObject, NSApplicationDelegate {
-    private let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    private let themes: [ProgressTheme]
+    private let settings: Settings
+    private let item: NSStatusItem
     private let infoMenu = NSMenu()
     private let themeMenu = NSMenu()
     private let summary = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let remaining = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLogin), keyEquivalent: "")
+
+    init(themes: [ProgressTheme], settings: Settings, statusBar: NSStatusBar) {
+        self.themes = themes
+        self.settings = settings
+        item = statusBar.statusItem(withLength: NSStatusItem.variableLength)
+    }
+
+    private var theme: ProgressTheme {
+        themes.first { $0.id == settings.themeID } ?? themes[0]
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         [summary, remaining].forEach { $0.isEnabled = false; infoMenu.addItem($0) }
@@ -54,7 +49,7 @@ final class StatusController: NSObject, NSApplicationDelegate {
 
     private func buildThemeMenu() -> NSMenu {
         let menu = NSMenu()
-        for theme in ThemeRegistry.all {
+        for theme in themes {
             let entry = NSMenuItem(title: theme.name, action: #selector(chooseTheme(_:)), keyEquivalent: "")
             entry.target = self
             entry.representedObject = theme.id
@@ -72,13 +67,13 @@ final class StatusController: NSObject, NSApplicationDelegate {
     }
 
     @objc private func chooseTheme(_ sender: NSMenuItem) {
-        Settings.theme = ThemeRegistry.named(sender.representedObject as? String)
+        settings.themeID = sender.representedObject as? String
         refresh()
     }
 
     @objc func refresh() {
         let progress = MonthProgress(Date())
-        let theme = Settings.theme
+        let theme = self.theme
         item.resetForTheme()
         theme.apply(progress, to: item)
         item.button?.toolTip = "\(progress.monthName): day \(progress.day) of \(progress.days)"
@@ -104,8 +99,4 @@ final class StatusController: NSObject, NSApplicationDelegate {
         }
         refresh()
     }
-}
-
-private extension Int {
-    var nonZero: Int? { self == 0 ? nil : self }
 }
