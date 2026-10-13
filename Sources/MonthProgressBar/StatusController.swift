@@ -1,11 +1,22 @@
 import AppKit
+import MonthProgress
+import ThemeApi
+import Themes
 import ServiceManagement
+
+enum ThemeRegistry {
+    static let all: [ProgressTheme] = [AquaTheme(), NativeTheme(), AsciiTheme(slots: Settings.slots)]
+
+    static func named(_ id: String?) -> ProgressTheme {
+        all.first { $0.id == id } ?? all[0]
+    }
+}
 
 enum Settings {
     static var slots: Int { max(3, UserDefaults.standard.integer(forKey: "slots").nonZero ?? 10) }
 
     static var theme: ProgressTheme {
-        get { Themes.named(UserDefaults.standard.string(forKey: "theme")) }
+        get { ThemeRegistry.named(UserDefaults.standard.string(forKey: "theme")) }
         set { UserDefaults.standard.set(newValue.id, forKey: "theme") }
     }
 }
@@ -43,7 +54,7 @@ final class StatusController: NSObject, NSApplicationDelegate {
 
     private func buildThemeMenu() -> NSMenu {
         let menu = NSMenu()
-        for theme in Themes.all {
+        for theme in ThemeRegistry.all {
             let entry = NSMenuItem(title: theme.name, action: #selector(chooseTheme(_:)), keyEquivalent: "")
             entry.target = self
             entry.representedObject = theme.id
@@ -61,7 +72,7 @@ final class StatusController: NSObject, NSApplicationDelegate {
     }
 
     @objc private func chooseTheme(_ sender: NSMenuItem) {
-        Settings.theme = Themes.named(sender.representedObject as? String)
+        Settings.theme = ThemeRegistry.named(sender.representedObject as? String)
         refresh()
     }
 

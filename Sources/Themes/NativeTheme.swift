@@ -1,13 +1,17 @@
 import AppKit
+import MonthProgress
+import ThemeApi
 
 // The system NSProgressIndicator, live in the menu bar, tinted with the user's accent colour.
-struct NativeTheme: ProgressTheme {
-    let id = "native"
-    let name = "macOS progress bar"
+public struct NativeTheme: ProgressTheme {
+    public let id = "native"
+    public let name = "macOS progress bar"
+
+    public init() {}
 
     private let barWidth: CGFloat = 64
 
-    func apply(_ progress: MonthProgress, to item: NSStatusItem) {
+    public func apply(_ progress: MonthProgress, to item: NSStatusItem) {
         guard let button = item.button else { return }
         let label = " " + progress.label + " "
         let labelWidth = (label as NSString).size(withAttributes: [.font: menuBarLabelFont]).width

@@ -1,23 +1,15 @@
 import AppKit
+import MonthProgress
 
 // Draws month progress into the status item. Themes own everything they put on the button;
 // the controller resets the button between themes.
-protocol ProgressTheme {
+public protocol ProgressTheme {
     var id: String { get }
     var name: String { get }
     func apply(_ progress: MonthProgress, to item: NSStatusItem)
 }
 
-enum Themes {
-    static let all: [ProgressTheme] = [AquaTheme(), NativeTheme(), AsciiTheme()]
-    static let fallback = all[0]
-
-    static func named(_ id: String?) -> ProgressTheme {
-        all.first { $0.id == id } ?? fallback
-    }
-}
-
-extension NSStatusItem {
+public extension NSStatusItem {
     static let themeViewID = NSUserInterfaceItemIdentifier("month-progress-theme-view")
 
     func resetForTheme() {
@@ -32,4 +24,4 @@ extension NSStatusItem {
     }
 }
 
-let menuBarLabelFont = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize - 1, weight: .regular)
+public let menuBarLabelFont = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize - 1, weight: .regular)

@@ -1,18 +1,22 @@
 import AppKit
+import MonthProgress
+import ThemeApi
 
 // The glossy, striped blue "candy" progress bar of Mac OS X Aqua.
-struct AquaTheme: ProgressTheme {
-    let id = "aqua"
-    let name = "Mac OS X Aqua"
+public struct AquaTheme: ProgressTheme {
+    public let id = "aqua"
+    public let name = "Mac OS X Aqua"
 
-    func apply(_ progress: MonthProgress, to item: NSStatusItem) {
+    public init() {}
+
+    public func apply(_ progress: MonthProgress, to item: NSStatusItem) {
         guard let button = item.button else { return }
         button.image = Self.image(fraction: progress.fraction, size: NSSize(width: 72, height: 13))
         button.imagePosition = .imageLeft
         button.attributedTitle = NSAttributedString(string: " " + progress.label, attributes: [.font: menuBarLabelFont])
     }
 
-    static func image(fraction: Double, size: NSSize) -> NSImage {
+    public static func image(fraction: Double, size: NSSize) -> NSImage {
         NSImage(size: size, flipped: false) { rect in
             let track = rect.insetBy(dx: 0.5, dy: 0.5)
             let radius = track.height / 2
