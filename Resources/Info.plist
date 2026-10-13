@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleIdentifier</key><string>com.baumannalexj.monthprogressbar</string>
-  <key>CFBundleName</key><string>MonthProgressBar</string>
-  <key>CFBundleDisplayName</key><string>Month Progress Bar</string>
-  <key>CFBundleExecutable</key><string>MonthProgressBar</string>
+  <key>CFBundleIdentifier</key><string>__BUNDLE_ID__</string>
+  <key>CFBundleName</key><string>__EXECUTABLE__</string>
+  <key>CFBundleDisplayName</key><string>__DISPLAY_NAME__</string>
+  <key>CFBundleExecutable</key><string>__EXECUTABLE__</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleShortVersionString</key><string>1.1.0</string>

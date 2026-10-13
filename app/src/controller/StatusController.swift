@@ -1,21 +1,21 @@
 import AppKit
 import Api
-import Themes
-import ServiceManagement
 import Models
+import ServiceManagement
 
 // Left click: month details. Right click (or control-click): pick a theme.
-final class StatusController: NSObject, NSApplicationDelegate {
+public final class StatusController: NSObject, NSApplicationDelegate {
     private let themes: [ProgressTheme]
     private let settings: Settings
     private let item: NSStatusItem
     private let infoMenu = NSMenu()
     private let themeMenu = NSMenu()
+    private let styleMenu = NSMenu()
     private let summary = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let remaining = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLogin), keyEquivalent: "")
 
-    init(themes: [ProgressTheme], settings: Settings, statusBar: NSStatusBar) {
+    public init(themes: [ProgressTheme], settings: Settings, statusBar: NSStatusBar) {
         self.themes = themes
         self.settings = settings
         item = statusBar.statusItem(withLength: NSStatusItem.variableLength)
@@ -25,16 +25,18 @@ final class StatusController: NSObject, NSApplicationDelegate {
         themes.first { $0.id == settings.themeID } ?? themes[0]
     }
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
+    public func applicationDidFinishLaunching(_ notification: Notification) {
+        populateThemeEntries(in: styleMenu)
+        populateThemeEntries(in: themeMenu)
+
         [summary, remaining].forEach { $0.isEnabled = false; infoMenu.addItem($0) }
         infoMenu.addItem(.separator())
         let style = NSMenuItem(title: "Style", action: nil, keyEquivalent: "")
-        style.submenu = buildThemeMenu()
+        style.submenu = styleMenu
         infoMenu.addItem(style)
         loginItem.target = self
         infoMenu.addItem(loginItem)
         infoMenu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
-        themeMenu.items = buildThemeMenu().items.map { $0.copy() as! NSMenuItem }
 
         item.button?.target = self
         item.button?.action = #selector(clicked)
@@ -47,15 +49,13 @@ final class StatusController: NSObject, NSApplicationDelegate {
         refresh()
     }
 
-    private func buildThemeMenu() -> NSMenu {
-        let menu = NSMenu()
+    private func populateThemeEntries(in menu: NSMenu) {
         for theme in themes {
             let entry = NSMenuItem(title: theme.name, action: #selector(chooseTheme(_:)), keyEquivalent: "")
             entry.target = self
             entry.representedObject = theme.id
             menu.addItem(entry)
         }
-        return menu
     }
 
     @objc private func clicked() {
@@ -74,15 +74,14 @@ final class StatusController: NSObject, NSApplicationDelegate {
     @objc func refresh() {
         let progress = MonthProgress(Date())
         let theme = self.theme
-        item.resetForTheme()
-        theme.apply(progress, to: item)
-        item.button?.toolTip = "\(progress.monthName): day \(progress.day) of \(progress.days)"
+        let model = menuModel(for: progress)
 
-        summary.title = "\(progress.monthName) — day \(progress.day) of \(progress.days) (\(progress.percent)%)"
-        remaining.title = progress.daysLeft == 0 ? "Last day of the month"
-            : "\(progress.daysLeft) day\(progress.daysLeft == 1 ? "" : "s") left"
+        apply(theme.render(progress), tooltip: model.tooltip, to: item)
+
+        summary.title = model.summary
+        remaining.title = model.remaining
         loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
-        for menu in [themeMenu, infoMenu.items.first { $0.submenu != nil }?.submenu].compactMap({ $0 }) {
+        for menu in [themeMenu, styleMenu] {
             menu.items.forEach { $0.state = ($0.representedObject as? String) == theme.id ? .on : .off }
         }
     }

@@ -1,5 +1,5 @@
 import AppKit
-import Themes
+import Controller
 
 enum IconRenderer {
     static let sizes = [16, 32, 128, 256, 512]
@@ -25,7 +25,7 @@ enum IconRenderer {
             .draw(in: tilePath, angle: -90)
 
         let bar = NSRect(x: tile.minX + 110 * scale, y: tile.midY - 70 * scale, width: tile.width - 220 * scale, height: 140 * scale)
-        AquaTheme.image(fraction: 0.62, size: bar.size).draw(in: bar)
+        AquaArtwork.image(fraction: 0.62, size: bar.size).draw(in: bar)
 
         let tickY = bar.minY - 90 * scale
         for i in 0..<7 {

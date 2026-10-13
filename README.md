@@ -13,19 +13,24 @@ Launch at Login toggle. Updates at midnight, on wake, and every 15 minutes. Sand
 
 ## Layout
 
+Functional core in a hexagonal shape: everything but `app/src/controller` is pure functions over values.
+
 ```
-Package.swift
-Sources/
-  Models/             domain models, no dependencies: MonthProgress (day/days/fraction)
-  Api/                ports on Models: the ProgressTheme interface, shared status-item helpers
-  Themes/             adapters on Api: AquaTheme, NativeTheme, AsciiTheme
-  MonthProgressBar/   the app: main.swift is the composition root; StatusController, Settings, IconRenderer
-Tests/MonthProgressTests/
-Resources/            Info.plist, sandbox entitlements, AppIcon.icns
+models/              domain: MonthProgress (day, days, fraction)
+api/                 ports: Rendering (what to draw), ProgressTheme (id, name, render: MonthProgress -> Rendering), MenuModel
+themes/              adapters: aquaTheme(), nativeTheme(), asciiTheme(slots:)
+app/
+  src/controller/    AppKit shell: StatusController, apply(Rendering) to the status item, Settings, Aqua artwork
+  src/main/          composition root (main.swift), icon renderer
+  tests/
+Resources/           Info.plist, sandbox entitlements, AppIcon.icns
 script-*-mac.sh
 ```
 
-A new theme is a type in `Themes/` conforming to `ProgressTheme`, added to the `themes` list in `main.swift`.
+A new theme is a function in `themes/` returning a `ProgressTheme`, added to the list in `app/src/main/main.swift`;
+a new kind of drawing is a `Rendering` case plus its branch in `app/src/controller/StatusItemRenderer.swift`.
+
+The SwiftUI `MenuBarExtra` take, and the earlier AppKit-adapter take, live on the `declarative` branch.
 
 ## Build, test, install (macOS 13+, Xcode or its command line tools)
 
