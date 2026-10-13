@@ -20,10 +20,3 @@ public struct MonthProgress: Equatable {
     public var daysLeft: Int { days - day }
     public var label: String { "\(day)/\(days)" }
 }
-
-public enum AsciiBar {
-    public static func render(_ progress: MonthProgress, slots: Int) -> String {
-        let filled = min(slots, Int((progress.fraction * Double(slots)).rounded()))
-        return "[" + String(repeating: "|", count: filled) + String(repeating: " ", count: slots - filled) + "]" + progress.label
-    }
-}

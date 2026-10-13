@@ -1,5 +1,6 @@
 import AppKit
-import MonthProgress
+import Api
+import Themes
 
 let arguments = CommandLine.arguments
 
@@ -8,7 +9,7 @@ if let i = arguments.firstIndex(of: "--print") {
     formatter.dateFormat = "yyyy-MM-dd"
     let dates = arguments.dropFirst(i + 1).compactMap(formatter.date(from:))
     for date in dates.isEmpty ? [Date()] : dates {
-        print(AsciiBar.render(MonthProgress(date), slots: Settings.slots))
+        print(AsciiTheme.render(MonthProgress(date), slots: Settings.slots))
     }
     exit(0)
 }

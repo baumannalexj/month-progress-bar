@@ -1,5 +1,4 @@
 import AppKit
-import MonthProgress
 import Api
 import Themes
 import ServiceManagement

@@ -1,5 +1,4 @@
 import AppKit
-import MonthProgress
 import Api
 
 // The system NSProgressIndicator, live in the menu bar, tinted with the user's accent colour.

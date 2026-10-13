@@ -1,5 +1,4 @@
 import AppKit
-import MonthProgress
 
 // Draws month progress into the status item. Themes own everything they put on the button;
 // the controller resets the button between themes.

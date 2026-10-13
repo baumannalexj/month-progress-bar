@@ -1,5 +1,6 @@
 import XCTest
-import MonthProgress
+import Api
+import Themes
 
 final class MonthProgressTests: XCTestCase {
     private let utc: Calendar = {
@@ -19,9 +20,9 @@ final class MonthProgressTests: XCTestCase {
     }
 
     func testAsciiBarRoundsToNearestSlot() {
-        XCTAssertEqual(AsciiBar.render(progress("2026-10-03"), slots: 10), "[|         ]3/31")
-        XCTAssertEqual(AsciiBar.render(progress("2026-10-13"), slots: 10), "[||||      ]13/31")
-        XCTAssertEqual(AsciiBar.render(progress("2026-10-31"), slots: 10), "[||||||||||]31/31")
+        XCTAssertEqual(AsciiTheme.render(progress("2026-10-03"), slots: 10), "[|         ]3/31")
+        XCTAssertEqual(AsciiTheme.render(progress("2026-10-13"), slots: 10), "[||||      ]13/31")
+        XCTAssertEqual(AsciiTheme.render(progress("2026-10-31"), slots: 10), "[||||||||||]31/31")
     }
 
     func testDaysLeftAndPercent() {

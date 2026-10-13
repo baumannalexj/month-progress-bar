@@ -1,5 +1,4 @@
 import AppKit
-import MonthProgress
 import Api
 
 // The glossy, striped blue "candy" progress bar of Mac OS X Aqua.
