@@ -1,28 +1,42 @@
-# mac month progress bar
+# month-progress-bar
 
-How far through the month you are, in the macOS menu bar:
+How far through the month you are, in the macOS menu bar, in one of three themes:
 
-```
-[||||      ]13/31
-```
+| Theme | Looks like |
+|---|---|
+| Mac OS X Aqua (default) | glossy striped blue pill + `13/31` |
+| macOS progress bar | the system `NSProgressIndicator`, in your accent colour |
+| ASCII | `[||||      ]13/31` |
 
-Native AppKit status item, monospaced so the bar keeps its width. Updates at midnight, on wake, and every 15 minutes.
-The menu shows the month, day N of M with a percentage, days left, and a Launch at Login toggle.
+Right-click (or control-click) the item to switch theme. Left-click shows the month, day N of M, days left, and a
+Launch at Login toggle. Updates at midnight, on wake, and every 15 minutes.
 
-## Build and run
-
-Needs the Xcode command line tools (`swiftc`), macOS 13+.
+## Build and install (macOS 13+, Xcode command line tools)
 
 ```sh
-./build.sh
-open build/MonthBar.app
+./script-build-mac.sh      # -> build/MonthProgressBar.app
+./script-install-mac.sh    # moves it to ~/Applications and starts it
 ```
 
-Move `build/MonthBar.app` to `~/Applications` before turning on Launch at Login, so the login item points somewhere stable.
+Turn on Launch at Login after installing, so the login item points at `~/Applications`.
+
+## Layout
+
+```
+app/
+  main.swift              entry point, --print / --aqua-png previews
+  MonthProgress.swift     day, days, fraction
+  ProgressTheme.swift     the theme interface and registry
+  StatusController.swift  status item, menus, refresh
+  Themes/                 one adapter per theme
+```
+
+A new theme is a type conforming to `ProgressTheme`, added to `Themes.all`.
 
 ## Options
 
 ```sh
-defaults write com.baumannalexj.monthbar slots -int 20   # bar width, default 10
-build/MonthBar.app/Contents/MacOS/MonthBar --print 2026-10-03 2026-10-29   # preview without launching
+defaults write com.baumannalexj.monthprogressbar slots -int 20       # ASCII bar width, default 10
+defaults write com.baumannalexj.monthprogressbar theme -string ascii # aqua | native | ascii
+build/MonthProgressBar.app/Contents/MacOS/MonthProgressBar --print 2026-10-03   # ASCII preview
 ```
