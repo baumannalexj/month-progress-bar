@@ -17,7 +17,7 @@ Launch at Login toggle. Updates at midnight, on wake, and every 15 minutes. Sand
 Package.swift
 Sources/
   MonthProgress/      core: day/days/fraction and the ASCII bar; Foundation only, builds off macOS too
-  ThemeApi/           port: the ProgressTheme interface and the status-item helpers themes share
+  Api/                port: the ProgressTheme interface and the status-item helpers themes share
   Themes/             adapters: AquaTheme, NativeTheme, AsciiTheme
   MonthProgressBar/   the app and composition root: main, StatusController, ThemeRegistry, IconRenderer
 Tests/MonthProgressTests/

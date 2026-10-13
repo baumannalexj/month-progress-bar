@@ -1,6 +1,6 @@
 import AppKit
 import MonthProgress
-import ThemeApi
+import Api
 
 public struct AsciiTheme: ProgressTheme {
     public let id = "ascii"

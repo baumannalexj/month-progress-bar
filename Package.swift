@@ -10,9 +10,9 @@ let package = Package(
     ],
     targets: [
         .target(name: "MonthProgress"),
-        .target(name: "ThemeApi", dependencies: ["MonthProgress"]),
-        .target(name: "Themes", dependencies: ["MonthProgress", "ThemeApi"]),
-        .executableTarget(name: "MonthProgressBar", dependencies: ["MonthProgress", "ThemeApi", "Themes"]),
+        .target(name: "Api", dependencies: ["MonthProgress"]),
+        .target(name: "Themes", dependencies: ["MonthProgress", "Api"]),
+        .executableTarget(name: "MonthProgressBar", dependencies: ["MonthProgress", "Api", "Themes"]),
         .testTarget(name: "MonthProgressTests", dependencies: ["MonthProgress"]),
     ]
 )
