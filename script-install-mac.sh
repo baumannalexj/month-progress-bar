@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
+# ./script-install-mac.sh [app|app-functional|app-declarative]  ->  ~/Applications/<Executable>.app, then starts it
 set -euo pipefail
 cd "$(dirname "$0")"
 
-app=MonthProgressBar.app
-target="$HOME/Applications/$app"
-[ -d "build/$app" ] || ./script-build-mac.sh
+variant="${1:-app}"
+app="$(./script-build-mac.sh "$variant" | tail -n 1)"
+name="$(basename "$app" .app)"
+target="$HOME/Applications/$name.app"
 
-pkill -x MonthProgressBar 2>/dev/null || true
+pkill -x "$name" 2>/dev/null || true
 mkdir -p "$HOME/Applications"
 if [ -d "$target" ]; then
-  mv "$target" "$(mktemp -d)/$app"
+  mv "$target" "$(mktemp -d)/$name.app"
 fi
-mv "build/$app" "$target"
+mv "$app" "$target"
 open "$target"
 echo "installed $target"
