@@ -1,5 +1,6 @@
 import AppKit
 import Api
+import Models
 
 public struct AsciiTheme: ProgressTheme {
     public let id = "ascii"

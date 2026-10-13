@@ -1,6 +1,7 @@
 import AppKit
 import Api
 import Themes
+import Models
 
 let arguments = CommandLine.arguments
 

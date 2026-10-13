@@ -1,5 +1,6 @@
 import AppKit
 import Api
+import Models
 
 // The glossy, striped blue "candy" progress bar of Mac OS X Aqua.
 public struct AquaTheme: ProgressTheme {

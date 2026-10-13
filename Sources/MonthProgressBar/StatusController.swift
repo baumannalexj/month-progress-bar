@@ -2,6 +2,7 @@ import AppKit
 import Api
 import Themes
 import ServiceManagement
+import Models
 
 enum ThemeRegistry {
     static let all: [ProgressTheme] = [AquaTheme(), NativeTheme(), AsciiTheme(slots: Settings.slots)]

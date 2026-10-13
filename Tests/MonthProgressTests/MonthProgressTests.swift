@@ -1,6 +1,6 @@
 import XCTest
-import Api
 import Themes
+import Models
 
 final class MonthProgressTests: XCTestCase {
     private let utc: Calendar = {

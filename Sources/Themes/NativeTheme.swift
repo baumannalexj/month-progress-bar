@@ -1,5 +1,6 @@
 import AppKit
 import Api
+import Models
 
 // The system NSProgressIndicator, live in the menu bar, tinted with the user's accent colour.
 public struct NativeTheme: ProgressTheme {
