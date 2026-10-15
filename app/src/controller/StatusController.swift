@@ -1,12 +1,12 @@
 import AppKit
 import Api
 import Models
-import ServiceManagement
 
 // Left click: month details. Right click (or control-click): pick a theme.
 public final class StatusController: NSObject, NSApplicationDelegate {
     private let themes: [ProgressTheme]
     private let settings: Settings
+    private let login: LoginItem
     private let item: NSStatusItem
     private let infoMenu = NSMenu()
     private let themeMenu = NSMenu()
@@ -15,9 +15,10 @@ public final class StatusController: NSObject, NSApplicationDelegate {
     private let remaining = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLogin), keyEquivalent: "")
 
-    public init(themes: [ProgressTheme], settings: Settings, statusBar: NSStatusBar) {
+    public init(themes: [ProgressTheme], settings: Settings, login: LoginItem, statusBar: NSStatusBar) {
         self.themes = themes
         self.settings = settings
+        self.login = login
         item = statusBar.statusItem(withLength: NSStatusItem.variableLength)
     }
 
@@ -46,6 +47,7 @@ public final class StatusController: NSObject, NSApplicationDelegate {
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(refresh),
                                                           name: NSWorkspace.didWakeNotification, object: nil)
         Timer.scheduledTimer(withTimeInterval: 15 * 60, repeats: true) { [weak self] _ in self?.refresh() }
+        login.reconcile()
         refresh()
     }
 
@@ -80,7 +82,17 @@ public final class StatusController: NSObject, NSApplicationDelegate {
 
         summary.title = model.summary
         remaining.title = model.remaining
-        loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        switch login.state {
+        case .on:
+            loginItem.title = "Launch at Login"
+            loginItem.state = .on
+        case .off:
+            loginItem.title = "Launch at Login"
+            loginItem.state = .off
+        case .needsApproval:
+            loginItem.title = "Launch at Login — approve in System Settings…"
+            loginItem.state = .mixed
+        }
         for menu in [themeMenu, styleMenu] {
             menu.items.forEach { $0.state = ($0.representedObject as? String) == theme.id ? .on : .off }
         }
@@ -88,10 +100,10 @@ public final class StatusController: NSObject, NSApplicationDelegate {
 
     @objc private func toggleLogin() {
         do {
-            if SMAppService.mainApp.status == .enabled {
-                try SMAppService.mainApp.unregister()
-            } else {
-                try SMAppService.mainApp.register()
+            switch login.state {
+            case .on: try login.disable()
+            case .off: try login.enable()
+            case .needsApproval: login.openSystemSettings()
             }
         } catch {
             NSAlert(error: error).runModal()

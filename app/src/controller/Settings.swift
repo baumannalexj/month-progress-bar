@@ -16,4 +16,9 @@ public struct Settings {
         get { defaults.string(forKey: "theme") }
         nonmutating set { defaults.set(newValue, forKey: "theme") }
     }
+
+    public var launchAtLogin: Bool? {
+        get { defaults.object(forKey: "launchAtLogin") as? Bool }
+        nonmutating set { defaults.set(newValue, forKey: "launchAtLogin") }
+    }
 }

@@ -24,7 +24,8 @@ if let i = arguments.firstIndex(of: "--iconset"), i + 1 < arguments.count {
 }
 
 let app = NSApplication.shared
-let controller = StatusController(themes: themes, settings: settings, statusBar: .system)
+let login = LoginItem(service: .mainApp, settings: settings)
+let controller = StatusController(themes: themes, settings: settings, login: login, statusBar: .system)
 app.delegate = controller
 app.setActivationPolicy(.accessory)
 app.run()
