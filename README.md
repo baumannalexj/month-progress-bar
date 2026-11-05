@@ -1,5 +1,10 @@
 # month-progress-bar
 
+<img width="424" height="46" alt="image" src="https://github.com/user-attachments/assets/0ea3d176-94bf-495e-afc8-092460ccc0d4" />
+<img width="384" height="183" alt="image" src="https://github.com/user-attachments/assets/976628c8-01d3-4f5b-8667-809a528400e6" />
+<img width="519" height="105" alt="image" src="https://github.com/user-attachments/assets/6972a4ca-53b8-4145-acd6-aa709a07b9cc" />
+
+
 How far through the month you are, in the macOS menu bar, in one of three themes:
 
 | Theme | Looks like |
