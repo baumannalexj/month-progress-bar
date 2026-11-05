@@ -13,6 +13,7 @@ public final class StatusController: NSObject, NSApplicationDelegate {
     private let styleMenu = NSMenu()
     private let summary = NSMenuItem(title: "", action: nil, keyEquivalent: "")
     private let remaining = NSMenuItem(title: "", action: nil, keyEquivalent: "")
+    private var observers: [NSObjectProtocol] = []
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLogin), keyEquivalent: "")
 
     public init(themes: [ProgressTheme], settings: Settings, login: LoginItem, statusBar: NSStatusBar) {
@@ -43,9 +44,11 @@ public final class StatusController: NSObject, NSApplicationDelegate {
         item.button?.action = #selector(clicked)
         item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
-        NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: .NSCalendarDayChanged, object: nil)
-        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(refresh),
-                                                          name: NSWorkspace.didWakeNotification, object: nil)
+        // NSCalendarDayChanged arrives on a background queue at midnight; AppKit may only be touched on main.
+        for (center, name) in [(NotificationCenter.default, Notification.Name.NSCalendarDayChanged),
+                               (NSWorkspace.shared.notificationCenter, NSWorkspace.didWakeNotification)] {
+            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in self?.refresh() })
+        }
         Timer.scheduledTimer(withTimeInterval: 15 * 60, repeats: true) { [weak self] _ in self?.refresh() }
         login.reconcile()
         refresh()

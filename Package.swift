@@ -16,6 +16,6 @@ let package = Package(
         .target(name: "Controller", dependencies: ["Api", "Models"], path: "app/src/controller"),
         .executableTarget(name: "MonthProgressBar", dependencies: ["Api", "Controller", "Models", "Themes"],
                           path: "app/src/main"),
-        .testTarget(name: "MonthProgressTests", dependencies: ["Api", "Models", "Themes"], path: "app/tests"),
+        .testTarget(name: "MonthProgressTests", dependencies: ["Api", "Controller", "Models", "Themes"], path: "app/tests"),
     ]
 )
