@@ -1,5 +1,6 @@
 import AppKit
-import Controller
+import Api
+import ProgressBarThemes
 
 enum IconRenderer {
     static let sizes = [16, 32, 128, 256, 512]
@@ -25,7 +26,10 @@ enum IconRenderer {
             .draw(in: tilePath, angle: -90)
 
         let bar = NSRect(x: tile.minX + 110 * scale, y: tile.midY - 70 * scale, width: tile.width - 220 * scale, height: 140 * scale)
-        AquaArtwork.image(fraction: 0.62, size: bar.size).draw(in: bar)
+        if case .image(let pill, _, _) = MacAquaTheme(size: bar.size, scale: 1)
+            .render(currentDay: 19, currentMonthMaxDay: 31) {
+            NSGraphicsContext.current!.cgContext.draw(pill, in: bar)
+        }
 
         let tickY = bar.minY - 90 * scale
         for i in 0..<7 {

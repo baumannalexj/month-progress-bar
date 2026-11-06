@@ -18,24 +18,31 @@ Launch at Login toggle. Updates at midnight, on wake, and every 15 minutes. Sand
 
 ## Layout
 
-Functional core in a hexagonal shape: everything but `app/src/controller` is pure functions over values.
+Interfaces first, one-way data flow: every input becomes an `Event`, a pure reducer turns it into the next state,
+and subscribers draw or save that state.
 
 ```
-models/              domain: MonthProgress (day, days, fraction)
-api/                 ports: Rendering (what to draw), ProgressTheme (id, name, render: MonthProgress -> Rendering), MenuModel
-themes/              adapters: aquaTheme(), nativeTheme(), asciiTheme(slots:)
-app/
-  src/controller/    AppKit shell: StatusController, apply(Rendering) to the status item, Settings, Aqua artwork
-  src/main/          composition root (main.swift), icon renderer
-  tests/
-Resources/           Info.plist, sandbox entitlements, AppIcon.icns
-script-*-mac.sh
+models/                 MonthProgress (currentDay, currentMonthMaxDay), ThemeID, LoginState
+api/                    ITheme, IState, IClock, IStore, IRender, ILaunchAtLogin, Event, Rendering, MenuModel
+themes/progressBar/     ascii.swift, native.swift, macaqua.swift: render(currentDay:currentMonthMaxDay:) -> Rendering
+app/src/
+  clock/                SystemClock: publishes the date at startup and on each new day, no timer
+  store/                State, pure Reducer, InMemoryStore
+  render/               StatusItemRenderer: the only AppKit view code; menu clicks become events
+  persistence/          DefaultsPersistence: theme and preferences in UserDefaults
+  login/                SystemLaunchAtLogin
+  main/                 composition root: Providers build everything, main.swift only wires
+app/tests/
 ```
 
-A new theme is a function in `themes/` returning a `ProgressTheme`, added to the list in `app/src/main/main.swift`;
-a new kind of drawing is a `Rendering` case plus its branch in `app/src/controller/StatusItemRenderer.swift`.
+```
+clock ──dateChanged──▶ store ──state──▶ renderer (draws)
+menu  ──themeChanged─▶   │    └──state──▶ persistence (saves)
+                     reduce(state, event) -> state   (pure; calls theme.render)
+```
 
-The SwiftUI `MenuBarExtra` take, and the earlier AppKit-adapter take, live on the `declarative` branch.
+A new theme is a type in `themes/progressBar/` conforming to `ITheme`, added to `themes` in
+`app/src/main/Providers.swift`.
 
 ## Build, test, install (macOS 13+, Xcode or its command line tools)
 
