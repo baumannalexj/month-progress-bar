@@ -1,8 +1,8 @@
 // swift-tools-version:5.10
 import PackageDescription
 
-// Functional core, hexagonal shape: models <- api <- themes are pure; app/src/controller is the AppKit shell,
-// app/src/main the composition root.
+// Interfaces first: models <- api <- adapters. Themes are pure; app/src/render is the only AppKit view code;
+// app/src/main is the composition root.
 let package = Package(
     name: "MonthProgressBar",
     platforms: [.macOS(.v13)],
@@ -12,10 +12,19 @@ let package = Package(
     targets: [
         .target(name: "Models", path: "models"),
         .target(name: "Api", dependencies: ["Models"], path: "api"),
-        .target(name: "Themes", dependencies: ["Api", "Models"], path: "themes"),
-        .target(name: "Controller", dependencies: ["Api", "Models"], path: "app/src/controller"),
-        .executableTarget(name: "MonthProgressBar", dependencies: ["Api", "Controller", "Models", "Themes"],
+        .target(name: "ProgressBarThemes", dependencies: ["Api", "Models"], path: "themes/progressBar"),
+
+        .target(name: "Clock", dependencies: ["Api", "Models"], path: "app/src/clock"),
+        .target(name: "Store", dependencies: ["Api", "Models"], path: "app/src/store"),
+        .target(name: "Persistence", dependencies: ["Api", "Models"], path: "app/src/persistence"),
+        .target(name: "Login", dependencies: ["Api", "Models", "Persistence"], path: "app/src/login"),
+        .target(name: "Render", dependencies: ["Api", "Models"], path: "app/src/render"),
+        .executableTarget(name: "MonthProgressBar",
+                          dependencies: ["Api", "Clock", "Login", "Models", "Persistence", "ProgressBarThemes", "Render", "Store"],
                           path: "app/src/main"),
-        .testTarget(name: "MonthProgressTests", dependencies: ["Api", "Controller", "Models", "Themes"], path: "app/tests"),
+
+        .testTarget(name: "MonthProgressTests",
+                    dependencies: ["Api", "Clock", "Models", "ProgressBarThemes", "Render", "Store"],
+                    path: "app/tests"),
     ]
 )
